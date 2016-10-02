@@ -1,20 +1,17 @@
 {
-  "name": "grommet",
-  "version": "0.6.12",
+  "name": "grommet-udacity",
+  "version": "0.1.0",
   "main": "index.js",
-  "description": "The most advanced UX framework for enterprise applications.",
+  "description": "Fork of Grommet, the world's most advanced UX Framework, for use in Udacity Alumni Projects",
   "authors": [
-    "Alan Souza",
-    "Bryan Jacquot",
-    "Chris Carlozzi",
-    "Eric Soderberg"
+    "Ryan Collins"
   ],
   "homepage": "http://grommet.io",
-  "bugs": "https://github.com/grommet/grommet/issues",
+  "bugs": "https://github.com/udacityalumni/grommet/issues",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/grommet/grommet.git"
+    "url": "https://github.com/udacityalumni/grommet.git"
   },
   "bin": {
     "grommet": "./bin/grommet.js"

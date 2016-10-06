@@ -1,6 +1,6 @@
 {
   "name": "grommet-udacity",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "index.js",
   "description": "Fork of Grommet, the world's most advanced UX Framework, for use in Udacity Alumni Projects",
   "authors": [

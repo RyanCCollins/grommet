@@ -59,7 +59,7 @@
 
   .#{$grommet-namespace}box {
     width: 50%;
-
+    box-sizing: border-box;
     @include media-query(palm) {
       width: 100%;
     }

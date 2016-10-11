@@ -17,8 +17,12 @@ export default class Tip extends Component {
   }
 
   componentDidMount () {
-    const { onClose, colorIndex } = this.props;
+    const { onClose, colorIndex, size } = this.props;
     const target = this._getTarget();
+    let dropSize = {
+      medium: size === 'medium' ? 'medium' : undefined,
+      large: size === 'large' ? 'large' : undefined
+    };
     if (target) {
       const rect = target.getBoundingClientRect();
       let align = {
@@ -38,6 +42,8 @@ export default class Tip extends Component {
 
       const classNames = classnames(
         `${CLASS_ROOT}__drop`, {
+          [`${CLASS_ROOT}__drop--medium`]: dropSize.medium,
+          [`${CLASS_ROOT}__drop--large`]: dropSize.large,
           [`${CLASS_ROOT}__drop--left`]: align.left,
           [`${CLASS_ROOT}__drop--right`]: align.right,
           [`${CLASS_ROOT}__drop--top`]: align.top,
@@ -99,9 +105,11 @@ export default class Tip extends Component {
 Tip.propTypes = {
   colorIndex: PropTypes.string,
   onClose: PropTypes.func.isRequired,
-  target: PropTypes.string.isRequired
+  target: PropTypes.string.isRequired,
+  size: PropTypes.oneOf(['small', 'medium', 'large']).isRequired
 };
 
 Tip.defaultProps = {
-  colorIndex: 'accent-1'
+  colorIndex: 'accent-1',
+  size: 'small'
 };

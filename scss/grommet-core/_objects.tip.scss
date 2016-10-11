@@ -5,6 +5,16 @@
   max-width: $size-small;
 }
 
+.grommet.#{$grommet-namespace}tip__drop--medium {
+  overflow: visible;
+  max-width: $size-medium;
+}
+
+.grommet.#{$grommet-namespace}tip__drop--large {
+  overflow: visible;
+  max-width: $size-large;
+}
+
 .#{$grommet-namespace}tip__drop {
 
   &:after {

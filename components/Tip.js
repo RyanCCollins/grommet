@@ -72,8 +72,13 @@ var Tip = function (_Component) {
       var _props = this.props;
       var onClose = _props.onClose;
       var colorIndex = _props.colorIndex;
+      var size = _props.size;
 
       var target = this._getTarget();
+      var dropSize = {
+        medium: size === 'medium' ? 'medium' : undefined,
+        large: size === 'large' ? 'large' : undefined
+      };
       if (target) {
         (function () {
           var _classnames;
@@ -86,7 +91,7 @@ var Tip = function (_Component) {
             bottom: rect.top >= window.innerHeight - rect.bottom ? 'top' : undefined
           };
 
-          var classNames = (0, _classnames3.default)(CLASS_ROOT + '__drop', (_classnames = {}, (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--left', align.left), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--right', align.right), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--top', align.top), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--bottom', align.bottom), _classnames));
+          var classNames = (0, _classnames3.default)(CLASS_ROOT + '__drop', (_classnames = {}, (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--medium', dropSize.medium), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--large', dropSize.large), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--left', align.left), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--right', align.right), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--top', align.top), (0, _defineProperty3.default)(_classnames, CLASS_ROOT + '__drop--bottom', align.bottom), _classnames));
 
           // we need a timeout here to avoid wrong bounding rect
           // for the target element
@@ -153,10 +158,12 @@ exports.default = Tip;
 Tip.propTypes = {
   colorIndex: _react.PropTypes.string,
   onClose: _react.PropTypes.func.isRequired,
-  target: _react.PropTypes.string.isRequired
+  target: _react.PropTypes.string.isRequired,
+  size: _react.PropTypes.oneOf(['small', 'medium', 'large']).isRequired
 };
 
 Tip.defaultProps = {
-  colorIndex: 'accent-1'
+  colorIndex: 'accent-1',
+  size: 'small'
 };
 module.exports = exports['default'];

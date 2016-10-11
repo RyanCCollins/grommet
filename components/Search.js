@@ -376,6 +376,7 @@ var Search = function (_Component) {
         input = _react2.default.createElement('input', (0, _extends3.default)({}, restProps, { key: 'input', id: 'search-drop-input', type: 'search',
           autoComplete: 'off',
           defaultValue: this.props.defaultValue,
+          placeholder: this.props.placeHolder,
           value: this.props.value,
           className: INPUT + ' ' + CLASS_ROOT + '__input',
           onChange: this._onChangeInput }));

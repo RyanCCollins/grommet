@@ -370,7 +370,6 @@ $colored-select-drop-caret: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB
 }
 
 .#{$grommet-namespace}form-field--error {
-  z-index: 1;
   border-color: map-get($brand-status-colors, critical);
 }
 

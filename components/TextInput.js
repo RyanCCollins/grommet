@@ -4,6 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
 
 var _defineProperty3 = _interopRequireDefault(_defineProperty2);
@@ -288,7 +292,8 @@ var TextInput = function (_Component) {
 
       var classes = (0, _classnames4.default)(CLASS_ROOT, INPUT, (0, _defineProperty3.default)({}, CLASS_ROOT + '--active', this.state.active), this.props.className);
 
-      return _react2.default.createElement('input', { ref: function ref(_ref) {
+      return _react2.default.createElement('input', (0, _extends3.default)({}, this.props, {
+        ref: function ref(_ref) {
           return _this3.componentRef = _ref;
         },
         id: this.props.id, name: this.props.name,
@@ -298,7 +303,7 @@ var TextInput = function (_Component) {
         placeholder: this.props.placeHolder,
         autoComplete: 'off',
         onChange: this._onInputChange,
-        onFocus: this._onFocus });
+        onFocus: this._onFocus }));
     }
   }]);
   return TextInput;

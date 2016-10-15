@@ -4,13 +4,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends2 = require('babel-runtime/helpers/extends');
+
+var _extends3 = _interopRequireDefault(_extends2);
+
 var _typeof2 = require('babel-runtime/helpers/typeof');
 
 var _typeof3 = _interopRequireDefault(_typeof2);
 
-var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
+var _keys = require('babel-runtime/core-js/object/keys');
 
-var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+var _keys2 = _interopRequireDefault(_keys);
 
 var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
 
@@ -39,10 +43,6 @@ var _react2 = _interopRequireDefault(_react);
 var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
-
-var _classnames2 = require('classnames');
-
-var _classnames3 = _interopRequireDefault(_classnames2);
 
 var _KeyboardAccelerators = require('../utils/KeyboardAccelerators');
 
@@ -73,10 +73,6 @@ var _DateTimeDrop2 = _interopRequireDefault(_DateTimeDrop);
 var _CSSClassnames = require('../utils/CSSClassnames');
 
 var _CSSClassnames2 = _interopRequireDefault(_CSSClassnames);
-
-var _Intl = require('../utils/Intl');
-
-var _Intl2 = _interopRequireDefault(_Intl);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -110,6 +106,7 @@ var DateTime = function (_Component) {
     _this._onForceClose = _this._onForceClose.bind(_this);
     _this._onControlClick = _this._onControlClick.bind(_this);
     _this._onClose = _this._onClose.bind(_this);
+    _this._onCloseDrop = _this._onCloseDrop.bind(_this);
     _this._onNext = _this._onNext.bind(_this);
     _this._onPrevious = _this._onPrevious.bind(_this);
     _this._cursorScope = _this._cursorScope.bind(_this);
@@ -134,21 +131,17 @@ var DateTime = function (_Component) {
   }, {
     key: 'componentDidUpdate',
     value: function componentDidUpdate(prevProps, prevState) {
-      var _state = this.state;
-      var cursor = _state.cursor;
-      var dropActive = _state.dropActive;
       // Set up keyboard listeners appropriate to the current state.
-
-      if (prevState.dropActive !== dropActive) {
-        this._activation(dropActive);
+      if (prevState.dropActive !== this.state.dropActive) {
+        this._activation(this.state.dropActive);
       }
 
-      if (dropActive) {
+      if (this.state.dropActive) {
         this._drop.render(this._renderDrop());
       }
 
-      if (cursor >= 0) {
-        this.inputRef.setSelectionRange(cursor, cursor);
+      if (this.state.cursor >= 0) {
+        this.inputRef.setSelectionRange(this.state.cursor, this.state.cursor);
       }
     }
   }, {
@@ -185,40 +178,30 @@ var DateTime = function (_Component) {
       var _props = this.props;
       var format = _props.format;
       var onChange = _props.onChange;
-      var value = _props.value;
 
-      var currentValue = event.target.value;
-      if (currentValue.length > 0) {
-        var date = (0, _moment2.default)(currentValue, format);
+      var value = event.target.value;
+      if (value.length > 0) {
+        var date = (0, _moment2.default)(value, format);
         // Only notify if the value looks valid
         if (date.isValid() && !date.parsingFlags().charsLeftOver) {
           if (onChange) {
-            onChange(currentValue);
+            onChange(value);
           }
-        } else if (typeof value === 'string' && currentValue.length < value.length) {
+        } else if (typeof this.props.value === 'string' && value.length < this.props.value.length) {
           // or if the user is removing characters
           if (onChange) {
-            onChange(currentValue);
+            onChange(value);
           }
         }
       } else if (onChange) {
-        onChange(currentValue);
+        onChange(value);
       }
     }
   }, {
     key: '_notify',
-    value: function _notify(date, day) {
-      var _props2 = this.props;
-      var format = _props2.format;
-      var onChange = _props2.onChange;
-
-      if (onChange) {
-        onChange(date);
-        if (day && !TIME_REGEXP.test(format)) {
-          // check to close the drop only if the user selected a day
-          // and the format of the date does not include time
-          this.setState({ dropActive: false, cursor: -1 });
-        }
+    value: function _notify(date) {
+      if (this.props.onChange) {
+        this.props.onChange(date);
       }
     }
   }, {
@@ -247,53 +230,52 @@ var DateTime = function (_Component) {
     key: '_onClose',
     value: function _onClose(event) {
       var drop = document.getElementById(DATE_TIME_DROP);
-      if (!(0, _DOM.isDescendant)(this.containerRef, event.target) && !(0, _DOM.isDescendant)(drop, event.target)) {
+      var isCalendarOnly = !TIME_REGEXP.test(this.props.format);
+      if (!(0, _DOM.isDescendant)(this.containerRef, event.target) && !(0, _DOM.isDescendant)(drop, event.target) || isCalendarOnly) {
+        this.setState({ dropActive: false, cursor: -1 });
+      }
+    }
+  }, {
+    key: '_onCloseDrop',
+    value: function _onCloseDrop(event) {
+      var drop = document.getElementById(DATE_TIME_DROP);
+      if (!(0, _DOM.isDescendant)(drop, event.target)) {
         this.setState({ dropActive: false, cursor: -1 });
       }
     }
   }, {
     key: '_onNext',
     value: function _onNext(event) {
-      if (this.inputRef === document.activeElement) {
-        var step = this.props.step;
-        var current = this.state.current;
-
-        event.preventDefault();
-        var date = current.clone();
-        var scope = this._cursorScope();
-        if ('a' === scope) {
-          if (date.hours() < 12) {
-            date.add(12, 'hours');
-          }
-        } else if ('m' === scope) {
-          date.add(step, FORMATS[scope]);
-        } else {
-          date.add(1, FORMATS[scope]);
+      event.preventDefault();
+      var date = this.state.current.clone();
+      var scope = this._cursorScope();
+      if ('a' === scope) {
+        if (date.hours() < 12) {
+          date.add(12, 'hours');
         }
-        this.setState({ current: date }, this._notify(date));
+      } else if ('m' === scope) {
+        date.add(this.props.step, FORMATS[scope]);
+      } else {
+        date.add(1, FORMATS[scope]);
       }
+      this.setState({ current: date }, this._notify(date));
     }
   }, {
     key: '_onPrevious',
     value: function _onPrevious(event) {
-      if (this.inputRef === document.activeElement) {
-        var step = this.props.step;
-        var current = this.state.current;
-
-        event.preventDefault();
-        var date = current.clone();
-        var scope = this._cursorScope();
-        if ('a' === scope) {
-          if (date.hours() >= 12) {
-            date.subtract(12, 'hours');
-          }
-        } else if ('m' === scope) {
-          date.subtract(step, FORMATS[scope]);
-        } else {
-          date.subtract(1, FORMATS[scope]);
+      event.preventDefault();
+      var date = this.state.current.clone();
+      var scope = this._cursorScope();
+      if ('a' === scope) {
+        if (date.hours() >= 12) {
+          date.subtract(12, 'hours');
         }
-        this.setState({ current: date }, this._notify(date));
+      } else if ('m' === scope) {
+        date.subtract(this.props.step, FORMATS[scope]);
+      } else {
+        date.subtract(1, FORMATS[scope]);
       }
+      this.setState({ current: date }, this._notify(date));
     }
   }, {
     key: '_cursorScope',
@@ -320,6 +302,8 @@ var DateTime = function (_Component) {
     value: function _activation(dropActive) {
       var listeners = {
         esc: this._onForceClose,
+        tab: this._onCloseDrop,
+        enter: this._onSelectDate,
         up: this._onPrevious,
         down: this._onNext
       };
@@ -331,11 +315,7 @@ var DateTime = function (_Component) {
 
         // If this is inside a FormField, place the drop in reference to it.
         var control = (0, _DOM.findAncestor)(this.containerRef, '.' + FORM_FIELD) || this.containerRef;
-        this._drop = _Drop2.default.add(control, this._renderDrop(), {
-          align: { top: 'bottom', left: 'left' },
-          focusControl: true,
-          context: this.context
-        });
+        this._drop = _Drop2.default.add(control, this._renderDrop(), { align: { top: 'bottom', left: 'left' } });
       } else {
 
         document.removeEventListener('click', this._onClose);
@@ -343,36 +323,38 @@ var DateTime = function (_Component) {
 
         if (this._drop) {
           this._drop.remove();
-          this._drop = undefined;
+          this._drop = null;
         }
       }
     }
   }, {
     key: '_renderDrop',
     value: function _renderDrop() {
-      var _props3 = this.props;
-      var format = _props3.format;
-      var step = _props3.step;
-      var current = this.state.current;
-
-      return _react2.default.createElement(_DateTimeDrop2.default, { format: format, value: current,
-        step: step, onChange: this._notify });
+      return _react2.default.createElement(_DateTimeDrop2.default, { format: this.props.format, value: this.state.current,
+        step: this.props.step, onChange: this._notify });
     }
   }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
 
-      var _props4 = this.props;
-      var className = _props4.className;
-      var format = _props4.format;
-      var id = _props4.id;
-      var name = _props4.name;
+      var _props2 = this.props;
+      var className = _props2.className;
+      var format = _props2.format;
+      var id = _props2.id;
+      var name = _props2.name;
       var dropActive = this.state.dropActive;
-      var intl = this.context.intl;
+
+      var restProps = Props.omit(this.props, (0, _keys2.default)(DateTime.propTypes));
       var value = this.props.value;
 
-      var classes = (0, _classnames3.default)(CLASS_ROOT, className, (0, _defineProperty3.default)({}, CLASS_ROOT + '--active', dropActive));
+      var classes = [CLASS_ROOT];
+      if (dropActive) {
+        classes.push(CLASS_ROOT + '--active');
+      }
+      if (className) {
+        classes.push(className);
+      }
       if (value instanceof Date) {
         value = (0, _moment2.default)(value).format(format);
       } else if (value && (typeof value === 'undefined' ? 'undefined' : (0, _typeof3.default)(value)) === 'object') {
@@ -380,21 +362,19 @@ var DateTime = function (_Component) {
       }
       var Icon = TIME_REGEXP.test(format) ? _Clock2.default : _Calendar2.default;
 
-      var dateTimeIconMessage = _Intl2.default.getMessage(intl, 'Date Time Icon');
-
       return _react2.default.createElement(
         'div',
         { ref: function ref(_ref2) {
             return _this2.containerRef = _ref2;
-          }, className: classes },
-        _react2.default.createElement('input', { ref: function ref(_ref) {
+          }, className: classes.join(' ') },
+        _react2.default.createElement('input', (0, _extends3.default)({}, restProps, { ref: function ref(_ref) {
             return _this2.inputRef = _ref;
-          }, placeholder: format,
+          },
+          placeholder: format,
           className: INPUT + ' ' + CLASS_ROOT + '__input',
           id: id, name: name,
-          value: value || '', onChange: this._onInputChange }),
+          value: value || '', onChange: this._onInputChange })),
         _react2.default.createElement(_Button2.default, { className: CLASS_ROOT + '__control', icon: _react2.default.createElement(Icon, null),
-          a11yTitle: dateTimeIconMessage,
           onClick: this._onControlClick })
       );
     }
@@ -406,20 +386,16 @@ DateTime.displayName = 'DateTime';
 exports.default = DateTime;
 
 
-DateTime.contextTypes = {
-  intl: _react.PropTypes.object
-};
-
-DateTime.defaultProps = {
-  format: 'M/D/YYYY h:mm a',
-  step: 1
-};
-
 DateTime.propTypes = {
   format: _react.PropTypes.string,
   name: _react.PropTypes.string,
   onChange: _react.PropTypes.func,
   step: _react.PropTypes.number,
   value: _react.PropTypes.oneOfType([_react.PropTypes.string, _react.PropTypes.object])
+};
+
+DateTime.defaultProps = {
+  format: 'M/D/YYYY h:mm a',
+  step: 1
 };
 module.exports = exports['default'];

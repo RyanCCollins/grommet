@@ -74,11 +74,14 @@ var _CSSClassnames = require('../utils/CSSClassnames');
 
 var _CSSClassnames2 = _interopRequireDefault(_CSSClassnames);
 
+var _Props = require('../utils/Props');
+
+var _Props2 = _interopRequireDefault(_Props);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// (C) Copyright 2014-2016 Hewlett Packard Enterprise Development LP
+var CLASS_ROOT = _CSSClassnames2.default.DATE_TIME; // (C) Copyright 2014-2016 Hewlett Packard Enterprise Development LP
 
-var CLASS_ROOT = _CSSClassnames2.default.DATE_TIME;
 var INPUT = _CSSClassnames2.default.INPUT;
 var FORM_FIELD = _CSSClassnames2.default.FORM_FIELD;
 var DATE_TIME_DROP = _CSSClassnames2.default.DATE_TIME_DROP;
@@ -345,7 +348,7 @@ var DateTime = function (_Component) {
       var name = _props2.name;
       var dropActive = this.state.dropActive;
 
-      var restProps = Props.omit(this.props, (0, _keys2.default)(DateTime.propTypes));
+      var restProps = _Props2.default.omit(this.props, (0, _keys2.default)(DateTime.propTypes));
       var value = this.props.value;
 
       var classes = [CLASS_ROOT];
